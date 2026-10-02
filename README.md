@@ -10,7 +10,7 @@ skills directory to use them.
 |-------|-------------|
 | [aios-capture](skills/aios-capture) | Capture useful information from the current chat into an "AIOS vault" at the end of a session or on request (`save this`, `/capture`). |
 | [frontend-master](skills/frontend-master) | Generate and review frontend code — React/Next.js, React Native/Expo, Tailwind, and motion (Framer Motion, Reanimated, GSAP). |
-| [llm-council](skills/llm-council) | Ask an "LLM Council" instead of a single model: members answer independently, rank each other anonymously, and a Chairman synthesizes the final answer. Based on karpathy/llm-council. |
+| [llm-council](skills/llm-council) | Ask an "LLM Council" instead of a single model: members with different stances (incl. a brutal Roaster) answer independently, rank each other anonymously, and Claude chairs the final answer. Optional OpenRouter mode runs real different models — free ones by default, with automatic fallback when a model is rate-limited. Based on karpathy/llm-council. |
 | [scrollcraft](skills/scrollcraft) | Build a premium scroll-driven landing page for any business — scrubbed video, pinned sections, sideways rails, pointer-reactive scenes. Ships its own engine, asset generator (kie.ai, needs `KIE_AI_API_KEY`) and verification scripts. |
 | [seedance-loop-prompt](skills/seedance-loop-prompt) | Generate a Seedance 2 prompt for a seamless looping background video. |
 

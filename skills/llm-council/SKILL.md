@@ -1,6 +1,6 @@
 ---
 name: "llm-council"
-description: "Ask an \"LLM Council\" instead of a single model — based on karpathy/llm-council. Several council members (including a brutal Roaster who attacks the idea from every angle) answer the question independently and in parallel, then anonymously review and rank each other's answers, and a Chairman synthesizes the final response. Default mode runs entirely on Claude subagents (no API key needed); an optional OpenRouter mode uses GPT/Gemini/Grok if the user has a key. Use whenever the user says \"ask the council\", \"LLM council\", \"council of models\", wants multiple independent takes on a question, wants an idea stress-tested or roasted, wants answers cross-checked and ranked, or wants the most robust possible answer to a hard or high-stakes question."
+description: "Ask an \"LLM Council\" instead of a single model — based on karpathy/llm-council. Several council members (including a brutal Roaster who attacks the idea from every angle) answer the question independently and in parallel, then anonymously review and rank each other's answers, and a Chairman synthesizes the final response. Default mode runs entirely on Claude subagents (no API key needed); an optional OpenRouter mode runs real different models (free models by default, with automatic fallback when one is rate-limited) if the user has a key. Use whenever the user says \"ask the council\", \"LLM council\", \"council of models\", wants multiple independent takes on a question, wants an idea stress-tested or roasted, wants answers cross-checked and ranked, or wants the most robust possible answer to a hard or high-stakes question."
 ---
 
 # LLM Council
@@ -62,17 +62,24 @@ Act as Chairman yourself (you have the most context). Synthesize all answers and
 - Give the Chairman's final answer in chat.
 - Show the leaderboard briefly (e.g., "Council ranked the Skeptic's answer best, 1.25 avg").
 - Offer (or write, if the user asked for a report) a full markdown report: final answer, leaderboard, all 5 answers with their stances, all 5 reviews. The side-by-side view is the main value of the council.
-- Per AIOS rules: any saved report is generated content → `vault/_sessions/`, never `knowledge/`.
+- Per AIOS rules: a saved report is generated content → `chats/YYYY-MM-DD-council-<topic>.md` (with the `chats/` frontmatter from `CLAUDE.md`), never `wiki/pages/` — the wiki only takes content through an ingest.
 
 ## Optional mode: real multi-model council via OpenRouter
 
-If the user has an OpenRouter API key (`sk-or-v1-...`), `scripts/council.py` (stdlib-only) runs the original design with actual different models (GPT, Gemini, Claude, Grok):
+If the user has an OpenRouter API key (`sk-or-v1-...`), `scripts/council.py` (stdlib-only) runs the original design with actually different models. **It uses free models by default** — no credits spent:
 
 ```bash
-OPENROUTER_API_KEY=sk-or-... python scripts/council.py "question" --out report.md
+python scripts/council.py "question" --out report.md
 ```
 
-Flags: `--models a,b,c`, `--chairman model`, `--json out.json`, `--key-file path`, `--question-file path`, `--timeout secs`. Key lookup order: env var → `.llm-council-key` file → ask the user. Never echo the key in full. Costs real credits (N answers + N rankings + 1 chairman per run). Only use this mode when the user explicitly has a key — default to the subagent council otherwise.
+- **Stances and the Roaster**: each seat gets one of the Stage 1 stances in its prompt (Analyst, Skeptic, Practitioner, Lateral Thinker, cycling) and **the last seat is always The Roaster**. A fallback model inherits the seat's stance, so the roast survives a rate-limited model. Answers are shuffled before review, and the report labels each answer and leaderboard row with its stance. `--no-roast` drops the Roaster seat; `--no-stances` sends the bare question (original karpathy behaviour). When you chair, apply the Stage 3 rule on the Roaster's hits as usual.
+- **You are the Chairman.** The script runs stages 1–2 only (answers + anonymous peer rankings) and leaves the Final Answer section empty. Read its report, then do Stage 3 exactly as described above — you are the strongest model in the room and cost nothing extra. Present the result the same way (final answer in chat, leaderboard, report on request), and fill the report's Final Answer section if you save it. Only if the user asks for a non-Claude chairman, pass `--chairman <openrouter-model-id>`.
+- **Free mode (default)**: council seats and a ranked fallback order come from `scripts/free_models.json`. When a model fails (rate-limited upstream, down, removed), the next unused model in that list takes its seat, so the council stays full. Edit that file to re-rank.
+- **Account-wide cap**: free models share one limit per account — 20 requests/min and 50/day (1000/day once $10 of credits has ever been bought). A 4-seat run is 8 requests plus any fallbacks (the chairman is you, not a request), so ~6 runs/day on the free cap. When the daily cap hits, the script stops and says so — switching models can't help.
+- **Free models churn**: run `python scripts/council.py --check-models` (no key needed) to list models that disappeared and new free ones not yet ranked. Update `free_models.json` from that.
+- `--paid` uses the frontier preset (GPT, Gemini, Claude, Grok) and costs real credits. `--no-fallback` disables substitution.
+
+Other flags: `--no-roast`, `--no-stances`, `--models a,b,c`, `--chairman model`, `--json out.json`, `--key-file path`, `--question-file path`, `--timeout secs`. Key lookup order: `OPENROUTER_API_KEY` env var → `--key-file` → `~/.llm-council-key` → ask the user. Never echo the key in full, and never write it into the vault or this skill folder (both sync/publish). Only use this mode when the user has a key — default to the subagent council otherwise. Report which models actually answered (the report header lists them; substitutions are logged to stderr).
 
 ## Notes
 

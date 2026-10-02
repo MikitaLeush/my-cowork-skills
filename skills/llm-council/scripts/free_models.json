@@ -1,0 +1,35 @@
+{
+  "_about": "Ranked OpenRouter free models for council.py. Best first. Council seats take the top entries, one per family; when a model fails (upstream 429, downtime, removed) the next unused entry takes its place. Free models churn: run `python council.py --check-models` to see which are gone and which new ones appeared.",
+  "updated": "2026-10-02",
+  "council": [
+    "thinkingmachines/inkling:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "qwen/qwen3.8-27b:free",
+    "dots-studio/dots-3-note-preview:free"
+  ],
+  "chairman": "claude",
+  "_chairman": "\"claude\" = the Claude session running the skill writes the final answer (free, strongest model). Put an OpenRouter model ID here, or pass --chairman <id>, to have the script synthesize instead.",
+  "fallbacks": [
+    "thinkingmachines/inkling:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "qwen/qwen3.8-27b:free",
+    "dots-studio/dots-3-note-preview:free",
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "google/gemma-4-31b-it:free",
+    "thinkingmachines/inkling-small:free",
+    "apodex/apodex-1.1-mini:free",
+    "google/gemma-4-26b-a4b-it:free",
+    "nvidia/nemotron-3.5-lightning:free",
+    "openrouter/free"
+  ],
+  "_excluded": {
+    "stealth/space-bunny-alpha": "stealth model: prompts are logged by the anonymous provider, and it vanishes without notice",
+    "inclusionai/ling-3.1-flash": "priced 0 but has no :free suffix: launch promo that can turn paid silently",
+    "poolside/laguna-s-2.1:free, poolside/laguna-xs-2.1:free, cohere/north-mini-code:free": "coding-agent specialists, weak at open-ended judgement",
+    "inclusionai/ling-3.0-flash-sante:free": "medical specialist",
+    "liquid/lfm-2.5-2.6b:free": "2.6B, 8K output: too small for a council seat",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": "perception sub-agent, not a generalist",
+    "nvidia/nemotron-3.5-content-safety:free": "safety classifier",
+    "google/lyria-3-pro-preview, google/lyria-3-clip-preview": "music generation"
+  }
+}
