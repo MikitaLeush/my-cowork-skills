@@ -9,16 +9,16 @@ Goal: every useful chat leaves a trace in AIOS.
 
 ## Step 0 — find the vault (machine detection)
 
-The vault lives at a different path per machine. Known machines (try in
-this order; if the folder is already connected, skip requesting):
+The vault's absolute path differs per machine, so never hardcode it.
 
-1. `D:\Apps\vallets\aios` (laptop 1)
-2. `C:\Users\nikit\work\aios` (laptop 2)
-
-Use `request_cowork_directory` with path #1; if it errors ("doesn't exist
-or isn't accessible"), request path #2. Whichever succeeds is the vault
-root for this machine. If neither exists, ask the user where the vault is
-and suggest adding the new path to this skill.
+1. **Prefer what is already there.** If a folder is already connected and
+   its root holds a `CLAUDE.md` carrying the AIOS schema, that is the
+   vault. Use it and skip the rest of this step.
+2. Otherwise try these known paths in order with
+   `request_cowork_directory` — they are hints, not a contract:
+   `D:\Apps\vallets\aios`, then `C:\Users\nikit\work\aios`.
+3. If neither exists, ask the user where the vault is on this machine and
+   offer to add that path to the list above.
 
 ## Step 1 — detect the vault layout
 
